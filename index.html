@@ -1,0 +1,164 @@
+<header>Hello Scatter</header>
+
+<script src='dist-web/eosjs-api.js'></script>
+<script src='dist-web/eosjs-jsonrpc.js'></script>
+<script src='dist-web/eosjs-jssig.js'></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-core.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs2.min.js"></script>
+<script>
+
+
+ScatterJS.plugins(new ScatterEOS());
+
+  const defaultPrivateKey = "5JtUScZK2XEp3g9gh7F8bwtPTRAkASmNrrftmx4AxDKD5K4zDnr";
+  //const signatureProvider = new eosjs_jssig.JsSignatureProvider([defaultPrivateKey]);
+
+  // This is a simple single-page application
+  // that will connect to Scatter and send a transaction (push `test` action at `walletzzzzzz`)
+  // once the page is loaded.
+
+const connectionOptions = {
+  initTimeout: 10000
+}
+
+const network = {
+    blockchain:'eos',
+    chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+    host:'api.eosio.cr',
+    port:80,
+    protocol:'https'
+}
+
+ScatterJS.scatter.connect('dexaraniiznx', connectionOptions).then(connected => {
+  if (!connected) {
+    // User does not have Scatter installed/unlocked.
+    return false;
+  }
+  else
+  {
+    console.log("Connected!");
+  }
+
+  const scatter = ScatterJS.scatter;
+  const requiredFields = {
+    accounts: [network]
+  };
+
+  scatter.getIdentity(requiredFields).then(async() => {
+
+    const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+    console.log(account);
+    const eosOptions = {
+      expireInSeconds: 60
+    }
+
+    // Get a proxy reference to eosjs which you can use to sign transactions with a user's Scatter.
+    //const eosScatter = scatter.eos(network, Eos, eosOptions); <<== Does not work
+    //const eosScatter = scatter.eos(network, Api, {rpc}, eosOptions); <<== Does not work
+    //const eosScatter = scatter.eos(network, { Api, rpc }, eosOptions); <<== Does not work
+
+    const rpc = new eosjs_jsonrpc.JsonRpc('https://api.eosio.cr:80');
+    //const api = new eosjs_api.Api({ rpc: rpc, signatureProvider: scatter.eosHook(network), textDecoder: new TextDecoder(), textEncoder: new TextEncoder()});
+
+    const scatterEos = scatter.eos(network, eosjs_api.Api, {rpc});
+
+    //console.log( rpc.get_account('walletzzzzzz') ); // <<==== This is working fine
+                                                    // returns Promise with a correct Promise.Value linking to the account
+
+    //const eosScatter = scatter.eos(network, Eos, eosOptions);
+
+    console.log("Success");
+
+/*
+    const transactionOptions = {
+      authorization: [`${account.name}@${account.authority}`]
+    };
+*/
+    console.log("Account name " + account.name);
+
+
+
+    var res = await scatterEos.transact({
+      actions: [{
+        account: 'dexaraniiznx',
+        name: 'setstate',
+        authorization: [{
+          actor: account.name,
+          permission: account.authority,
+        }],
+        data: {
+          owner: account.name
+        },
+      }]
+    })
+    .then(trx => {
+      console.log(`Transaction ID: ${trx.transaction_id}`);
+    }).catch(error => {
+      console.error(error);
+    });
+  })
+  .catch(err => {
+    console.error(err);
+  })
+/*
+    scatterEos.transact({
+      actions: [{
+        account: 'dexaraniiznx',
+        name: 'spawnplayer',
+        authorization: [{
+          actor: 'walletzzzzzz',
+          permission: 'active',
+        }],
+        data: {
+          acc: account.name,
+          planet_id: 2
+        },
+      }]
+    }, {
+      broadcast: true,
+      sign: true
+    })
+    .then(trx => {
+      console.log(`Transaction ID: ${trx.transaction_id}`);
+    }).catch(error => {
+      console.error(error);
+    });
+
+    // ^^^^^^^^^^ TAPOS fields error
+    */
+
+
+    /*
+    // example of pushing an action
+    const result = await api.transact({
+      actions: [{
+        account: 'walletzzzzzz',
+        name: 'test',
+        authorization: [{
+          actor: 'walletzzzzzz',
+          permission: 'active',
+        }],
+        data: {
+          acct: account.name,
+          number: 10,
+        },
+      }]
+    }, {
+      broadcast: true,
+      sign: true
+    })
+    .then(trx => {
+      console.log(`Transaction ID: ${trx.transaction_id}`);
+    }).catch(error => {
+      console.error(error);
+    });
+    */
+
+
+
+  })
+  .catch(err => {
+    console.error(err)
+  })
+</script>
