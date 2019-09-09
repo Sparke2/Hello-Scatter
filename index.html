@@ -8,15 +8,8 @@
 <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs2.min.js"></script>
 <script>
 
-
 ScatterJS.plugins(new ScatterEOS());
-
-  const defaultPrivateKey = "5JtUScZK2XEp3g9gh7F8bwtPTRAkASmNrrftmx4AxDKD5K4zDnr";
-  //const signatureProvider = new eosjs_jssig.JsSignatureProvider([defaultPrivateKey]);
-
-  // This is a simple single-page application
-  // that will connect to Scatter and send a transaction (push `test` action at `walletzzzzzz`)
-  // once the page is loaded.
+const defaultPrivateKey = "5JtUScZK2XEp3g9gh7F8bwtPTRAkASmNrrftmx4AxDKD5K4zDnr";
 
 const connectionOptions = {
   initTimeout: 10000
@@ -30,7 +23,7 @@ const network = {
     protocol:'https'
 }
 
-ScatterJS.scatter.connect('dexaraniiznx', connectionOptions).then(connected => {
+ScatterJS.scatter.connect('eosio', connectionOptions).then(connected => {
   if (!connected) {
     // User does not have Scatter installed/unlocked.
     return false;
@@ -39,7 +32,6 @@ ScatterJS.scatter.connect('dexaraniiznx', connectionOptions).then(connected => {
   {
     console.log("Connected!");
   }
-
   const scatter = ScatterJS.scatter;
   const requiredFields = {
     accounts: [network]
@@ -61,23 +53,17 @@ ScatterJS.scatter.connect('dexaraniiznx', connectionOptions).then(connected => {
     const rpc = new eosjs_jsonrpc.JsonRpc('https://api.eosio.cr:80');
     //const api = new eosjs_api.Api({ rpc: rpc, signatureProvider: scatter.eosHook(network), textDecoder: new TextDecoder(), textEncoder: new TextEncoder()});
 
-    const scatterEos = scatter.eos(network, eosjs_api.Api, {rpc});
+    const scatterEos = scatter.eos(network, eosjs_api.Api, { rpc });
 
+    console.log(scatterEos);
     //console.log( rpc.get_account('walletzzzzzz') ); // <<==== This is working fine
                                                     // returns Promise with a correct Promise.Value linking to the account
 
     //const eosScatter = scatter.eos(network, Eos, eosOptions);
-
-    console.log("Success");
+    console.log("Account name " + account.name);
+    console.log("Account authority " + account.authority);
 
 /*
-    const transactionOptions = {
-      authorization: [`${account.name}@${account.authority}`]
-    };
-*/
-    console.log("Account name " + account.name);
-
-
 
     var res = await scatterEos.transact({
       actions: [{
@@ -101,63 +87,41 @@ ScatterJS.scatter.connect('dexaraniiznx', connectionOptions).then(connected => {
   .catch(err => {
     console.error(err);
   })
-/*
-    scatterEos.transact({
+
+*/
+
+const resp = await scatterEos.transact({
       actions: [{
-        account: 'dexaraniiznx',
-        name: 'spawnplayer',
+        account: 'eosio',
+        name: 'undelegatebw',
         authorization: [{
-          actor: 'walletzzzzzz',
-          permission: 'active',
+          actor: account.name,
+          permission: account.authority,
         }],
-        data: {
-          acc: account.name,
-          planet_id: 2
-        },
-      }]
-    }, {
-      broadcast: true,
-      sign: true
-    })
-    .then(trx => {
+    data: {
+      from: account.name,
+      receiver: account.name,
+      stake_net_quantity: '0.0001 EOS',
+      stake_cpu_quantity: '0.0001 EOS',
+      transfer: false,
+    }
+  }]
+}, {
+  blocksBehind: 3,
+  expireSeconds: 30,
+})
+.then(trx => {
       console.log(`Transaction ID: ${trx.transaction_id}`);
     }).catch(error => {
       console.error(error);
     });
-
-    // ^^^^^^^^^^ TAPOS fields error
-    */
-
-
-    /*
-    // example of pushing an action
-    const result = await api.transact({
-      actions: [{
-        account: 'walletzzzzzz',
-        name: 'test',
-        authorization: [{
-          actor: 'walletzzzzzz',
-          permission: 'active',
-        }],
-        data: {
-          acct: account.name,
-          number: 10,
-        },
-      }]
-    }, {
-      broadcast: true,
-      sign: true
-    })
-    .then(trx => {
-      console.log(`Transaction ID: ${trx.transaction_id}`);
-    }).catch(error => {
-      console.error(error);
-    });
-    */
-
-
-
   })
+  .catch(err => {
+    console.error(err);
+  })
+
+
+})
   .catch(err => {
     console.error(err)
   })
