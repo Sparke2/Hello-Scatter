@@ -18,8 +18,8 @@ const connectionOptions = {
 const network = {
     blockchain:'eos',
     chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
-    host:'api.eosio.cr',
-    port:80,
+    host:'eos.greymass.com',
+    port:443,
     protocol:'https'
 }
 
@@ -45,7 +45,7 @@ ScatterJS.scatter.connect('eosio', connectionOptions).then(connected => {
     const eosOptions = {
       expireInSeconds: 60
     }
-    const rpc = new eosjs_jsonrpc.JsonRpc('https://api.eosio.cr:80');
+    const rpc = new eosjs_jsonrpc.JsonRpc('https://eos.greymass.com:443');
     const scatterEos = scatter.eos(network, eosjs_api.Api, { rpc });
 
     console.log(scatterEos);
@@ -66,8 +66,8 @@ ScatterJS.scatter.connect('eosio', connectionOptions).then(connected => {
     data: {
       from: account.name,
       receiver: account.name,
-      stake_net_quantity: '0.0001 EOS',
-      stake_cpu_quantity: '0.0001 EOS',
+      unstake_net_quantity: '0.0001 EOS',
+      unstake_cpu_quantity: '0.0001 EOS',
       transfer: false,
     }
   }]
