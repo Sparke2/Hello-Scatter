@@ -18,12 +18,12 @@ const connectionOptions = {
 const network = {
     blockchain:'eos',
     chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
-    host:'eos.greymass.com',
+    host:'eu1.eosdac.io',
     port:443,
     protocol:'https'
 }
 
-ScatterJS.scatter.connect('eosio', connectionOptions).then(connected => {
+ScatterJS.scatter.connect('dexaraniiznx').then(connected => {
   if (!connected) {
     // User does not have Scatter installed/unlocked.
     console.log("Connection troubles");
@@ -45,7 +45,7 @@ ScatterJS.scatter.connect('eosio', connectionOptions).then(connected => {
     const eosOptions = {
       expireInSeconds: 60
     }
-    const rpc = new eosjs_jsonrpc.JsonRpc('https://eos.greymass.com:443');
+    const rpc = new eosjs_jsonrpc.JsonRpc('https://eu1.eosdac.io:443');
     const scatterEos = scatter.eos(network, eosjs_api.Api, { rpc });
 
     console.log(scatterEos);
@@ -57,18 +57,15 @@ ScatterJS.scatter.connect('eosio', connectionOptions).then(connected => {
 
     const resp = await scatterEos.transact({
       actions: [{
-        account: 'eosio',
-        name: 'undelegatebw',
+        account: 'dexaraniiznx',
+        name: 'spawnplayer',
         authorization: [{
           actor: account.name,
-          permission: account.authority,
+          permission: account.authority
         }],
     data: {
-      from: account.name,
-      receiver: account.name,
-      unstake_net_quantity: '0.0001 EOS',
-      unstake_cpu_quantity: '0.0001 EOS',
-      transfer: false,
+      acc: account.name,
+      planet_id: '5'
     }
   }]
 }, {
