@@ -23,7 +23,7 @@ const network = {
     protocol:'https'
 }
 
-ScatterJS.scatter.connect('dexaraniiznx').then(connected => {
+ScatterJS.scatter.connect('eosfinextkns').then(connected => {
   if (!connected) {
     // User does not have Scatter installed/unlocked.
     console.log("Connection troubles");
@@ -57,15 +57,17 @@ ScatterJS.scatter.connect('dexaraniiznx').then(connected => {
 
     const resp = await scatterEos.transact({
       actions: [{
-        account: 'dexaraniiznx',
-        name: 'spawnplayer',
+        account: 'eosfinextkns',
+        name: 'transfer',
         authorization: [{
           actor: account.name,
           permission: account.authority
         }],
     data: {
-      acc: account.name,
-      planet_id: '5'
+          from: account.name,
+          to: "dexaraniiznx",
+          quantity: "1.00000000 EOX",
+          memo: ""
     }
   }]
 }, {
